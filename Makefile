@@ -14,7 +14,14 @@ setup-local:
 	virtualenv -p /usr/local/opt/python@3.7/bin/python3 ~/.devops
 
 install:
-	# This should be run from inside a virtualenv
+	# for linux
+	pip install --upgrade pip &&\
+		pip install -r requirements.txt
+	if [ ! -d ./bin ]; then mkdir ./bin; fi
+	wget -O ./bin/hadolint https://github.com/hadolint/hadolint/releases/download/v1.16.3/hadolint-Linux-x86_64
+	chmod +x ./bin/hadolint
+
+install-mac:
 	pip install --upgrade pip &&\
 		pip install -r requirements.txt
 
@@ -24,11 +31,12 @@ test:
 	#python -m pytest --nbval notebook.ipynb
 
 lint:
-	# See local hadolint install instructions:   https://github.com/hadolint/hadolint
-	# This is linter for Dockerfiles
+	# for linux
+	./bin/hadolint Dockerfile
+	pylint --disable=R,C,W1203 app.py
+
+lint-mac:
 	hadolint Dockerfile
-	# This is a linter for Python source code linter: https://www.pylint.org/
-	# This should be run from inside a virtualenv
 	pylint --disable=R,C,W1203 app.py
 
 validate-circleci:
